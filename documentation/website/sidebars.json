@@ -1,0 +1,101 @@
+{
+  "Installation": {
+    "Getting started": [
+      "setup.index",
+      "setup.quickstart"
+    ],
+    "Installation": [
+      "setup.requirements",
+      "setup.installation",
+      "setup.troubleshooting"
+    ],
+    "Configuration": [
+      "setup.configuration",
+      "setup.data",
+      "setup.authentication",
+      "setup.audit"
+    ],
+    "Ingesting": [
+      "setup.baleen",
+      "setup.old-baleen"
+    ],
+    "Other deployments": [
+      "setup.docker"
+    ]
+  },
+  "Development": {
+    "Setup": [
+      "dev.index",
+      "dev.setup-dev-env",
+      "dev.documentation",
+      "dev.build"
+    ],
+    "Concepts": [
+      "dev.data",
+      "dev.graphql",
+      "dev.actions"
+    ],
+    "Tutorials": [
+      "dev.tutorial-index",
+      "dev.tutorial-server",
+      "dev.tutorial-ui",
+      "dev.tutorial-ui-actions",
+      "dev.tutorial-advanced"
+    ],
+    "Support": [
+      "dev.ui-plugins-for-devs"
+    ]
+  },
+  "use": {
+    "Basic": [
+      "use.index",
+      "use.data"
+    ],
+    "Common": [
+      "use.common-action-dropdown",
+      "use.common-dataset-selector"
+    ],
+    "Application": [
+      "use.application-layout",
+      "use.authentication",
+      "use.user-management"
+    ],
+    "Corpus": [
+      "use.corpus-list",
+      "use.corpus-summary",
+      "use.metadata-explorer"
+    ],
+    "Document": [
+      "use.document-search",
+      "use.document-reader",
+      "use.document-details"
+    ],
+    "Entity": [
+      "use.entity-search",
+      "use.entity-details"
+    ],
+    "Mention": [
+      "use.mention-search",
+      "use.mention-details"
+    ],
+    "Relation": [
+      "use.relation-search",
+      "use.relation-details"
+    ],
+    "Overviews": [
+      "use.subject-overview",
+      "use.map-explorer",
+      "use.network-explorer"
+    ],
+    "Feedback": [
+      "use.leave-feedback",
+      "use.feedback-reader"
+    ],
+    "Editor": [
+      "use.document-editor",
+      "use.entity-editor",
+      "use.mention-editor",
+      "use.relation-editor"
+    ]
+  }
+}
