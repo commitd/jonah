@@ -2,7 +2,7 @@
 
 
 echo "Cleaning old build"
-rmdir -rf build/
+rm -rf build/
 mkdir build
 
 echo "Building UI"
