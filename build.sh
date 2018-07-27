@@ -19,5 +19,6 @@ cd -
 
 echo "Collating to build directory"
 cp -r jonah-server/build/. build/.
+cp -r jonah-ui/build/. build/.
 cp -r config/*  build/.
 
