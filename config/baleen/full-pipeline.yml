@@ -1,0 +1,161 @@
+# This is a more complex pipeline with uses NLP techniques for entity and relation extraction.
+# It also attempts document level coreference (SieveCoreference) which can be slow on large or complex files. 
+
+elasticsearch:
+  cluster: elasticsearch
+  host: localhost
+
+mongo:
+  host: localhost
+  index: baleen
+
+orderer: DependencyGraph
+
+collectionreader:
+  class: FolderReader
+  # TODO Change this to point to your data
+  folders: ./input
+  contentExtractor: StructureContentExtractor
+
+history:
+  class: uk.gov.dstl.baleen.core.history.noop.NoopBaleenHistory
+
+annotators:
+  # Optionally add specific file backed gazetteers for known entities (as here for Person types):
+  # - class: gazetteer.File
+  #   type: Person
+  #   fileName: data/person.txt        
+  - cleaners.AddGenderToPerson
+  - cleaners.AddTitleToPerson
+  - cleaners.CleanPunctuation
+  - cleaners.CleanTemporal
+  - cleaners.CorefBrackets
+  - cleaners.CorefCapitalisationAndApostrophe
+  - cleaners.CurrencyDetection
+  - cleaners.EntityInitials
+  - cleaners.MergeAdjacent
+  - cleaners.MergeAdjacentQuantities
+  - cleaners.MergeNationalityIntoEntity
+  - cleaners.NaiveMergeRelations
+  - cleaners.NormalizeOSGB
+  - cleaners.NormalizeTemporal
+  - cleaners.NormalizeWhitespace
+  - cleaners.ReferentToEntity
+  - cleaners.RelationTypeFilter
+  - cleaners.RemoveLowConfidenceEntities
+  - cleaners.RemoveNestedEntities
+  - cleaners.RemoveNestedLocations
+  - cleaners.RemoveOverlappingEntities
+  - cleaners.SplitBrackets
+  - cleaners.Surname
+  - cleaners.DiscardEntityWithSameId
+  - cleaners.DiscardRelationWithSameId
+  - coreference.SieveCoreference
+  - gazetteer.Country
+  - grammatical.NPAtCoordinate
+  - grammatical.NPElement
+  - grammatical.NPLocation
+  - grammatical.NPOrganisation
+  - grammatical.NPTitleEntity
+  - grammatical.QuantityNPEntity
+  - grammatical.TOLocationEntity
+  - language.OpenNLP
+  - misc.GenericMilitaryPlatform
+  - misc.GenericVehicle
+  - misc.GenericWeapon
+  - misc.MentionedAgain
+  - misc.NationalityToLocation
+  - class: misc.OrganisationPersonRole
+    type: organisationRole
+  - misc.People
+  # Pronouns generate a lot of noise, but are useful for relations and coreference
+  # misc.Pronouns
+  - regex.Area
+  - regex.BritishArmyUnits
+  - regex.Callsign
+  - regex.CasRegistryNumber
+  - regex.Date
+  - regex.DateTime
+  - regex.Distance
+  - regex.DocumentNumber
+  - regex.Dtg
+  - regex.Email
+  - regex.FlightNumber
+  - regex.Frequency
+  - regex.Hms
+  - regex.IpV4
+  - regex.LatLon
+  - regex.Mgrs
+  - regex.Money
+  - regex.Nationality
+  - regex.Osgb
+  - regex.Postcode
+  - regex.RelativeDate
+  - regex.SocialMediaUsername
+  - regex.TaskForce
+  - regex.Telephone
+  - regex.Time
+  - regex.TimeQuantity
+  - regex.USTelephone
+  - regex.UnqualifiedDate
+  - regex.Url
+  - regex.Volume
+  - regex.Weight
+  - stats.DocumentLanguage
+  - class: stats.OpenNLP
+    model: ../models/en-ner-location.bin
+    type: Location
+  - class: stats.OpenNLP
+    model: ../models/en-ner-organization.bin
+    type: Organisation
+  - class: stats.OpenNLP
+    model: ../models/en-ner-person.bin
+    type: Person 
+  - class: relations.DependencyRelationshipAnnotator
+    type: dependencyRelationship
+  - class: relations.NPVNP
+    onlyExisting: true
+    type: npvnp
+  - class: relations.SimpleInteraction
+    type: interaction
+  - class: relations.RegExRelationshipAnnotator
+    pattern: "(:Person:).*(visit\\w*|went to).*(:Location:)"
+    sourceGroup: 1
+    valueGroup: 2
+    targetGroup: 3
+    type: locatedAt
+  - class: relations.RegExRelationshipAnnotator
+    pattern: "(:Person:).*(:Person:)"
+    type: associated
+  - class: relations.RegExRelationshipAnnotator
+    pattern: "(:Person:)\\s+<(:CommsIdentifier:)>"
+    type: hasCommsIdentifier
+  - class: relations.RegExRelationshipAnnotator
+    pattern: "(:Person:)\\s+(:CommsIdentifier:)"
+    type: hasCommsIdentifier
+  - class: relations.RegExRelationshipAnnotator
+    pattern: "(:Person:)\\s+:(:CommsIdentifier:)"
+    type: hasCommsIdentifier
+  - class: relations.PartOfSpeechRelationshipAnnotator
+    pattern: "(NNP).*(VBD).*(NNP)"
+    sourceGroup: 1
+    valueGroup: 2
+    targetGroup: 3
+    type: pos
+  - class: relations.PartOfSpeechRelationshipAnnotator
+    pattern: "the (.+) of ((?:NNP ?)+) is ((?:NNP ?)+)"
+    stopWords: 
+      - the
+      - of
+      - is
+    sourceGroup: 2
+    valueGroup: 1
+    targetGroup: 3
+    type: pos
+  - triage.RakeKeywords
+  
+consumers:
+  - class: analysis.Elasticsearch
+    index: baleen
+  - analysis.Mongo
+  

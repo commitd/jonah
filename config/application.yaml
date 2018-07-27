@@ -1,0 +1,85 @@
+---
+# TODO: Configure your dataasets here, though this should work with a standard Baleen output
+ketos:
+  core:
+    mongo: 
+      - id: baleen_mongo
+        datasource: baleen
+        name: Baleen (Mongo)
+        description: Output from Baleen in Mongo
+        edittable: true
+        db: baleen
+    elasticsearch: 
+      - id: baleen_es
+        datasource: baleen
+        name: Baleen (ES)
+        description: Output from Baleen in Elasticsearch
+        edittable: true
+        index: baleen
+    feedback:
+      id: feedback
+
+--- 
+spring:
+  application:
+    name: Jonah
+
+invest:
+  config:
+    title: Jonah
+    serverUrl: http://localhost:8080
+    # An example of setting
+    # settings: 
+    #    ketos_map_url:  "http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
+    #    ketos_map_attribution: "@copy; OpenCycleMap, OSM contributors"
+  
+  ui:
+    plugins:
+        - ketos-ui-corpuslist
+        - ketos-ui-corpussummary
+        - ketos-ui-metadataexplorer
+        - ketos-ui-documentsearch
+        - ketos-ui-cluster
+        - ketos-ui-documentreader
+        - ketos-ui-documentdetails
+        - ketos-ui-entitysearch
+        - ketos-ui-entitydetails
+        - ketos-ui-relationsearch
+        - ketos-ui-relationdetails
+        - ketos-ui-mentionsearch
+        - ketos-ui-mentiondetails
+        - ketos-ui-subjectoverview
+        - ketos-ui-network
+        - ketos-ui-map
+        - ketos-ui-editor
+        - ketos-ui-feedback-form
+        - ketos-ui-feedback-reader
+        - ketos-ui-usermanagement
+
+    host: 
+      roots: 
+        - ./ui/
+        
+---
+# Some of the logging in other frameworks is very verbose and can hide startup issues, 
+# We reduce that logging here, but if you have any issues with db connection, etc you should comment out these lines
+logging:
+  level:
+    # Disable warnings about GraphQL type mapping (largely these are int=Integer)
+    io.leangen.graphql.generator.OperationMapper: ERROR
+    io.leangen.graphql.metadata.strategy.query.AnnotatedArgumentBuilder: ERROR
+    # Disable listing of all the ES Plugins available
+    org.elasticsearch.plugins.PluginsService: WARN
+    # Don't list internal Spring context, web setup, events
+    org.springframework.boot.web: WARN
+    org.springframework.web: WARN
+    # Ignore some specific log entries
+    org.springframework.jmx.export.annotation.AnnotationMBeanExporter: WARN
+    reactor.ipc.netty.tcp.BlockingNettyContext: WARN
+    io.netty.util.internal.PlatformDependent: WARN
+    org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping: WARN
+    org.springframework.beans.factory.support.DefaultListableBeanFactory: WARN
+    # Don't log the router functions (though this can be useful to see your UI extension are in place) 
+    # Disable logging of all the mongo connections
+    org.mongodb.driver.cluster: INFO
+    org.mongodb.driver.connection: INFO

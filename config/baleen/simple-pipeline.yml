@@ -1,0 +1,96 @@
+# This is a fairly basic pipelines without any advanced NLP work. Therefore its quite fast, and predictable.
+# It will output entities and relations to Mongo and ES  
+
+elasticsearch:
+  cluster: elasticsearch
+  host: localhost
+
+mongo:
+  host: localhost
+  index: baleen
+
+orderer: DependencyGraph
+
+collectionreader:
+  class: FolderReader
+  # Change this to point to your data
+  folders: ./input
+  contentExtractor: StructureContentExtractor
+
+history:
+  class: uk.gov.dstl.baleen.core.history.noop.NoopBaleenHistory
+
+annotators:
+  # Optionally add specific file backed gazetteers for known entities (as here for Person types):
+  # - class: gazetteer.File
+  #   type: Person
+  #   fileName: data/person.txt           
+  - cleaners.AddGenderToPerson
+  - cleaners.AddTitleToPerson
+  - cleaners.CleanPunctuation
+  - cleaners.CleanTemporal
+  - cleaners.CorefBrackets
+  - cleaners.CorefCapitalisationAndApostrophe
+  - cleaners.CurrencyDetection
+  - cleaners.EntityInitials
+  - cleaners.MergeAdjacent
+  - cleaners.MergeAdjacentQuantities
+  - cleaners.MergeNationalityIntoEntity
+  - cleaners.NaiveMergeRelations
+  - cleaners.NormalizeOSGB
+  - cleaners.NormalizeTemporal
+  - cleaners.NormalizeWhitespace
+  - cleaners.ReferentToEntity
+  - cleaners.RelationTypeFilter
+  - cleaners.RemoveLowConfidenceEntities
+  - cleaners.RemoveNestedEntities
+  - cleaners.RemoveNestedLocations
+  - cleaners.RemoveOverlappingEntities
+  - cleaners.SplitBrackets
+  - cleaners.Surname
+  - cleaners.DiscardEntityWithSameId
+  - cleaners.DiscardRelationWithSameId
+  - gazetteer.Country
+  - misc.MentionedAgain
+  - language.OpenNLP
+  - misc.People
+  - regex.Area
+  - regex.BritishArmyUnits
+  - regex.Callsign
+  - regex.CasRegistryNumber
+  - regex.Date
+  - regex.DateTime
+  - regex.Distance
+  - regex.DocumentNumber
+  - regex.Dtg
+  - regex.Email
+  - regex.FlightNumber
+  - regex.Frequency
+  - regex.Hms
+  - regex.IpV4
+  - regex.LatLon
+  - regex.Mgrs
+  - regex.Money
+  - regex.Nationality
+  - regex.Osgb
+  - regex.Postcode
+  - regex.RelativeDate
+  - regex.SocialMediaUsername
+  - regex.TaskForce
+  - regex.Telephone
+  - regex.Time
+  - regex.TimeQuantity
+  - regex.USTelephone
+  - regex.UnqualifiedDate
+  - regex.Url
+  - regex.Volume
+  - regex.Weight
+  - class: relations.NPVNP
+    onlyExisting: true
+    type: npvnp
+ 
+consumers:
+  - class: analysis.Elasticsearch
+    index: baleen
+  - analysis.Mongo
+  
