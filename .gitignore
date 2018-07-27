@@ -1,0 +1,4 @@
+/build/
+/*.log
+/jonah-server/
+/jonah-ui/
