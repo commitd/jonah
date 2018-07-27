@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Actions · Jonah</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Actions are the way in which UI views exchange information. "/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Actions · Jonah"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.io/jonah/jonah/index.html"/><meta property="og:description" content="Actions are the way in which UI views exchange information. "/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/jonah/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/jonah/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/jonah/"><h2 class="headerTitle">Jonah</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/jonah/docs/setup.index.html" target="_self">Setup</a></li><li class=""><a href="/jonah/docs/use.index.html" target="_self">Use</a></li><li class="siteNavGroupActive"><a href="/jonah/docs/dev.index.html" target="_self">Develop</a></li><li class=""><a href="https://github.com/commitd/jonah-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/jonah-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Concepts</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Setup</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.index.html">Developing Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.setup-dev-env.html">Setup a development environment</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.documentation.html">Updating documentation</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.build.html">Build</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.data.html">Data types in Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.graphql.html">GraphQL Usage</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/jonah/docs/dev.actions.html">Actions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-index.html">Basic tutorial</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-server.html">Creating a simple server plugin</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui.html">Creating a simple UI</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui-actions.html">Responding to UI actions</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-advanced.html">Advanced</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Support</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.ui-plugins-for-devs.html">Development supporting UI plugins</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Actions</h1></header><article><div><span><p>Actions are the way in which UI views exchange information.</p>
+<p>The notion of actions will be familiar with developers who have experience of <a href="https://developer.android.com/reference/android/content/Intent.html">Android Intents</a> or in the Javascript world <a href="https://redux.js.org/basics/actions">Flux/Redux actions</a>.</p>
+<p>UI views declare that they support actions, which are simple (but freeform) strings. Each action has a corresponding payload. The action tells the plugin what the payload is, and the payload provides the details needed to execute the action. For example:</p>
+<ol>
+<li>Plugin A has a document it wants to display to the user (when the view clicks). From the framework it requests all the plugins which have the <code>document.view</code>.</li>
+<li>Plugin A receives a list which includes Plugin B (and perhaps others as well).</li>
+<li>Plugin A constructs a payload which includes the information required for the <code>document.view</code> action.</li>
+<li>Plugin A sends the action and payload to the framework</li>
+<li>The framework will find and display Plugin B passing it the action and payload</li>
+<li>Plugin B will proceed to execute the action.</li>
+</ol>
+<h2><a class="anchor" aria-hidden="true" id="ketos-actions-types"></a><a href="#ketos-actions-types" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Ketos actions types</h2>
+<p>Within Ketos the following actions are standardised, see <code>ketos-components/src/Actions.ts</code>. In ketos actions take a standard pattern of <code>[type].[activity]</code> where:</p>
+<ul>
+<li><code>type</code> is one of  <code>document</code>, <code>corpus</code>, <code>relation</code>, <code>entity</code>, <code>mention</code></li>
+<li><code>activity</code> is one of <code>search</code>, <code>view</code>, <code>edit</code>, <code>delete</code></li>
+</ul>
+<p>Many plugins can be defined as supporting a single action, eg <code>document.view</code>. So the meaning of the different actions will vary from plugin to plugin as the example shows:</p>
+<table>
+<thead>
+<tr><th>Action</th><th>Payload Type</th><th>Description</th><th>Example of plugins</th></tr>
+</thead>
+<tbody>
+<tr><td><code>document.view</code></td><td>DatasetAndDocumentPayload</td><td>View a document</td><td>Read document, view document metadata, find similar document</td></tr>
+<tr><td><code>document.search</code></td><td>DatasetAndDocumentPayload</td><td>View a document</td><td>Perform Google like search, Perform structured search</td></tr>
+<tr><td><code>document.edit</code></td><td>DatasetAndDocumentPayload</td><td>Allow user to edit a document</td><td>Edit document form, Word processor view to amend document content</td></tr>
+<tr><td><code>document.delete</code></td><td>DatasetAndDocumentPayload</td><td>Request document is deleted</td><td>Review and Confirm deletion of document from the corpus</td></tr>
+</tbody>
+</table>
+<p>The payload above are defined in <code>ketos-components/src/Payloads.ts</code>:</p>
+<pre><code class="hljs css languages- ts">DocumentViewPayload = DocumentEditPayload = DocumentDeletePayload = {
+    datasetId: <span class="hljs-built_in">string</span>
+    documentId: <span class="hljs-built_in">string</span>
+}
+
+DocumentSearchPayload = {
+    datasetId: <span class="hljs-built_in">string</span>,
+    documentFilter?: DocumentFilter
+}
+
+<span class="hljs-comment">// where:</span>
+
+DocumentFilter = {
+    id?: <span class="hljs-built_in">string</span>
+    properties?: PropertiesMap
+    metadata?: PropertiesMap
+    content?: <span class="hljs-built_in">string</span>
+
+    info?: {
+        <span class="hljs-keyword">type</span>?: <span class="hljs-built_in">string</span>
+        source?: <span class="hljs-built_in">string</span>
+        language?: <span class="hljs-built_in">string</span>
+        classification?: <span class="hljs-built_in">string</span>
+        caveats?: <span class="hljs-built_in">string</span>
+        releasability: <span class="hljs-built_in">string</span>
+        publishedId: <span class="hljs-built_in">string</span>
+
+        startTimestamp?: <span class="hljs-built_in">number</span>
+        endTimestamp?: <span class="hljs-built_in">number</span>
+    }
+}
+
+</code></pre>
+<p>As can be seen from the search example, the payload can pass considerable amounts of information between plugins.</p>
+<p>Developers are free to create other actions, but should document them so other plugin developers know they can call upon them.</p>
+<h2><a class="anchor" aria-hidden="true" id="declaring-support-for-an-action-in-your-ui-plugin"></a><a href="#declaring-support-for-an-action-in-your-ui-plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Declaring support for an action in your UI plugin</h2>
+<p>If you use the <code>invest.json</code> approach for plugins, create an <code>invest.json</code> file alongside your plugins <code>index.html</code> page, then you can declare actions within that. Here is a complete <code>invest.json</code> for the document reader plugin, delcaring support for the <code>document.view</code> action.</p>
+<pre><code class="hljs css languages- json">{
+    <span class="hljs-attr">"id"</span>: <span class="hljs-string">"ketos-ui-documentreader"</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Document reader"</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"View documents and metadata"</span>,
+    <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"file text outline"</span>,
+    <span class="hljs-attr">"roles"</span>: [],
+    <span class="hljs-attr">"actions"</span>: [
+        {
+            <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Read document"</span>,
+            <span class="hljs-attr">"description"</span>: <span class="hljs-string">"View document and metadata"</span>,
+            <span class="hljs-attr">"action"</span>: <span class="hljs-string">"document.view"</span>
+        }
+    ]
+}
+</code></pre>
+<p>Notice that that <code>actions</code> block contains not just the supported <code>action</code>, but also the friendly <code>title</code> and <code>description</code> which helps the user understand what the plugin will display in response to receiving this action. If another plugin supported the <code>document.view</code> action, and displayed a <a href="https://en.wikipedia.org/wiki/Tag_cloud">word cloud</a> for that document, it's <code>invest.json</code> may look like:</p>
+<pre><code class="hljs css languages- json">{
+    <span class="hljs-attr">"id"</span>: <span class="hljs-string">"ketos-ui-wordcloud"</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Word cloud"</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Tag or word cloud"</span>,
+    <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"file"</span>,
+    <span class="hljs-attr">"roles"</span>: [],
+    <span class="hljs-attr">"actions"</span>: [
+        {
+            <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Word cloud"</span>,
+            <span class="hljs-attr">"description"</span>: <span class="hljs-string">"View important words in the document sized by frequency"</span>,
+            <span class="hljs-attr">"action"</span>: <span class="hljs-string">"document.view"</span>
+        }
+    ]
+}
+
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="building-a-ui-plugin-that-responds-to-actions"></a><a href="#building-a-ui-plugin-that-responds-to-actions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building a UI plugin that responds to actions</h2>
+<p>Thanks to some common components in the Invest framework, responding to actions in your plugin as declared is quite simple. Most plugins will follow a simple pattern.</p>
+<p>The <code>index.tsx</code> file will wrap the plugin's main App React component with an <code>InvestPlugin</code>. The <code>InvestPlugin</code> interfaces with the outer application, and specifically in this case, processes incoming actions and passes them to the App as React props.</p>
+<pre><code class="hljs css languages- ts">import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import App from './App'
+
+import './index.css'
+import 'semantic-ui-offline/semantic.min.css'
+
+import { InvestUiPlugin } from 'invest-plugin'
+
+
+ReactDOM.render(
+  &lt;InvestUiPlugin&gt;
+    &lt;App /&gt;
+  &lt;/InvestUiPlugin&gt;,
+  document.getElementById('root') as HTMLElement
+)
+
+</code></pre>
+<p>Our App.tsx becomes:</p>
+<pre><code class="hljs css languages- tsx"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<span class="hljs-keyword">import</span> { isEqual } <span class="hljs-keyword">from</span> <span class="hljs-string">'lodash-es'</span>
+<span class="hljs-keyword">import</span> { PluginProps } <span class="hljs-keyword">from</span> <span class="hljs-string">'invest-plugin'</span>
+
+<span class="hljs-comment">// Import the payload and action we support</span>
+<span class="hljs-keyword">import</span> { ENTITY_VIEW, EntityViewPayload } <span class="hljs-keyword">from</span> <span class="hljs-string">'ketos-components'</span>
+
+
+<span class="hljs-comment">// Top level Apps typcially don't have any other props, just those provided by InvestPlugin</span>
+type Props =  PluginProps
+
+<span class="hljs-comment">// When an action arrives, store it's value in the React state</span>
+<span class="hljs-comment">// You might not need this in your own plugins (you could just use this.props.action / this.props.payload)</span>
+<span class="hljs-comment">// but this allows us some control (eg we can allow the user to override the datasetId if we wanted)</span>
+type State = {
+  datasetId?: string
+  entityId?: string
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span>&lt;<span class="hljs-title">Props</span>, <span class="hljs-title">State</span>&gt; </span>{
+
+  state: State = {
+    <span class="hljs-attr">entityId</span>: <span class="hljs-literal">undefined</span>,
+    <span class="hljs-attr">datasetId</span>: <span class="hljs-literal">undefined</span>
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    <span class="hljs-comment">// If you have a new action, or a different payload then we need to process it</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.props.action !== nextProps.action || !isEqual(<span class="hljs-keyword">this</span>.props.payload, nextProps.payload)) {
+      <span class="hljs-keyword">this</span>.onAction(nextProps.action, nextProps.payload)
+    }
+  }
+
+  render() {
+    <span class="hljs-keyword">const</span> { datasetId, entityId } = <span class="hljs-keyword">this</span>.state
+    
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Dataset is {datasetId || "None"}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Entity is {entityId || "None"}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+
+    )
+  }
+
+  private onAction = <span class="hljs-function">(<span class="hljs-params">action?: string, payload?: {}</span>) =&gt;</span> {
+
+    <span class="hljs-comment">// Update the state from the action/payload causing a rerender</span>
+
+    <span class="hljs-keyword">if</span> (action == <span class="hljs-literal">null</span> || payload == <span class="hljs-literal">null</span>) {
+       <span class="hljs-comment">// If something is missing, clear the old values</span>
+      <span class="hljs-keyword">this</span>.setState({
+        <span class="hljs-attr">entityId</span>: <span class="hljs-literal">undefined</span>
+      })
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (action === ENTITY_VIEW) {
+      <span class="hljs-comment">// Otherwise we'll take the payload and save it to our state</span>
+      
+      <span class="hljs-keyword">const</span> p = ((payload || {}) <span class="hljs-keyword">as</span> EntityViewPayload)
+      <span class="hljs-keyword">this</span>.setState({
+        <span class="hljs-attr">datasetId</span>: p.datasetId,
+        <span class="hljs-attr">entityId</span>: p.entityId
+      })
+    }
+  }
+}
+
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="building-a-ui-plugin-that-sends-actions"></a><a href="#building-a-ui-plugin-that-sends-actions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building a UI plugin that sends actions</h2>
+<p>Invest also has support to help plugins find, display and navigate to other plugins. The simplest way to do this is through the <code>ActionDropdown</code>.</p>
+<p>The <code>ActionDropdown</code> is a React component which queries the framework for required actions and displays them as a button. A simple use might be:</p>
+<pre><code class="hljs css languages- ts">
+import * as React from 'react'
+import { ActionDropdown } from 'invest-components'
+import { DOCUMENT_VIEW,  } from '../../Actions'
+
+export type Props = {
+    datasetId: string
+    documentId: string
+}
+
+export default class DocumentInfo extends React.Component&lt;Props&gt; {
+
+    render() {
+
+        const { documentId, datasetId } = this.props
+
+        return (
+            &lt;div&gt;
+                &lt;p&gt;You might have the ActionDropdown in a table cell, next to a heading, etc&lt;/p&gt;
+                &lt;ActionDropdown
+                    text="View"
+                    actions={[DOCUMENT_VIEW]}
+                    onSelect={this.handleAction}
+                /&gt;
+            &lt;/div&gt;
+        )
+    }
+
+    private handleAction = (act: (payload?: {}) =&gt; void, action: string) =&gt; {
+        act({
+            documentId: this.props.documentId,
+            datasetId: this.props.datasetId
+        })
+    }
+}
+</code></pre>
+<p>As illustrated above the ActionDropdown is provided with <code>text</code> (which is displayed in the button), an <code>action</code> or <code>actions</code> which it should find and display, and a callback <code>onSelect</code> when an action is clicked. The <code>handleAction</code> is our callback implementation. It is responsible for creating a payload and then calling <code>act</code>. The <code>act</code> function is managed by the <code>ActionDropdown</code> and it passes the action and the callback to the plugin that the user has selected.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/jonah/docs/dev.graphql.html">← GraphQL Usage</a><a class="docs-next button" href="/jonah/docs/dev.tutorial-index.html">Basic tutorial →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/jonah/docs/setup.index.html">Setup</a><a href="/jonah/docs/use.index.html">Use</a><a href="/jonah/docs/dev.index.html">Develop</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/jonah">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

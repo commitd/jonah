@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Creating a simple server plugin · Jonah</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Create a new Maven module under the `ketos-java` directory, or copy the `ketos-project-template` example in the same folder. The maven module should have a name artifactId `ketos-person-age` and as the `ketos-project-template` have a dependency on `ketos-common` and `invest-test`  "/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Creating a simple server plugin · Jonah"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.io/jonah/jonah/index.html"/><meta property="og:description" content="Create a new Maven module under the `ketos-java` directory, or copy the `ketos-project-template` example in the same folder. The maven module should have a name artifactId `ketos-person-age` and as the `ketos-project-template` have a dependency on `ketos-common` and `invest-test`  "/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/jonah/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/jonah/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/jonah/"><h2 class="headerTitle">Jonah</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/jonah/docs/setup.index.html" target="_self">Setup</a></li><li class=""><a href="/jonah/docs/use.index.html" target="_self">Use</a></li><li class="siteNavGroupActive"><a href="/jonah/docs/dev.index.html" target="_self">Develop</a></li><li class=""><a href="https://github.com/commitd/jonah-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/jonah-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Tutorials</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Setup</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.index.html">Developing Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.setup-dev-env.html">Setup a development environment</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.documentation.html">Updating documentation</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.build.html">Build</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.data.html">Data types in Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.graphql.html">GraphQL Usage</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.actions.html">Actions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-index.html">Basic tutorial</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/jonah/docs/dev.tutorial-server.html">Creating a simple server plugin</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui.html">Creating a simple UI</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui-actions.html">Responding to UI actions</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-advanced.html">Advanced</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Support</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.ui-plugins-for-devs.html">Development supporting UI plugins</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Creating a simple server plugin</h1></header><article><div><span><p>Create a new Maven module under the <code>ketos-java</code> directory, or copy the <code>ketos-project-template</code> example in the same folder. The maven module should have a name artifactId <code>ketos-person-age</code> and as the <code>ketos-project-template</code> have a dependency on <code>ketos-common</code> and <code>invest-test</code></p>
+<p>We need to declare that this is a GraphQL extension to Ketos. To do this we create a new class <code>PersonAgeExtension</code> in a package <code>io.committed.ketos.plugins.personage</code> looking like:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">package</span> io.committed.ketos.plugins.personage;
+
+
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-comment">// We want to find any services we define in the same package so use ComponentScan</span>
+<span class="hljs-meta">@ComponentScan</span>(PersonAgeExtension.class)
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PersonAgeExtension</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">InvestGraphQlExtension</span> </span>{
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"person-age"</span>;
+    }
+
+}
+</code></pre>
+<p>In order for Spring to find our extension we need to create a file called <code>spring.factories</code> under <code>src/main/resources/META-INF/</code>:</p>
+<pre><code class="hljs css languages- ini">org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.committed.ketos.plugins.personage.PersonAgeExtension,
+</code></pre>
+<p>We'll now add our implementation of the age guesser:</p>
+<pre><code class="hljs css languages- java">
+<span class="hljs-keyword">package</span> io.committed.ketos.plugins.personage;
+
+<span class="hljs-meta">@Service</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AgeGuesser</span> </span>{
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;Integer&gt; <span class="hljs-title">guess</span><span class="hljs-params">(BaleenEntity e)</span> </span>{
+
+        <span class="hljs-comment">// If its not a person we can't guess</span>
+        <span class="hljs-keyword">if</span>(!<span class="hljs-string">"Person"</span>.equals(e.getType)) {
+            <span class="hljs-keyword">return</span> Optional.empty();
+        }
+
+        <span class="hljs-comment">// Use the value</span>
+        String value =  e.getValue();
+        <span class="hljs-keyword">if</span>(Strings.isNullOrEmpty(value)) {
+            <span class="hljs-keyword">return</span> Optional.empty();
+        }
+
+        <span class="hljs-comment">// Spilt value into names</span>
+        String[] names = value.spilt(<span class="hljs-string">" "</span>);
+
+        <span class="hljs-keyword">for</span>(String s : names) {
+            Optional&lt;Integer&gt; o = guessAgeForName(s);
+            <span class="hljs-keyword">if</span>(o.isPresent()) {
+                <span class="hljs-comment">// if we've got it</span>
+                <span class="hljs-keyword">return</span> o;
+            }
+        }
+
+        <span class="hljs-comment">// If we got here we don't know the age</span>
+        <span class="hljs-keyword">return</span> Optional.empty();
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> Optional&lt;Integer&gt; <span class="hljs-title">guessAgeForName</span><span class="hljs-params">(String name)</span> </span>{
+        <span class="hljs-comment">// Our implementation here is just a silly...</span>
+        <span class="hljs-comment">// Exercise for the reader</span>
+        <span class="hljs-comment">// One easy implementation would be read in a CSV of year / names as per census info then find the most likely year for each name and save in a map</span>
+
+        <span class="hljs-keyword">if</span>(name.length &gt; <span class="hljs-number">0</span>) {
+            <span class="hljs-keyword">return</span> Optional.of(name.length * <span class="hljs-number">5</span>);
+        }
+        
+        <span class="hljs-keyword">return</span> Optional.empty();
+    }
+}
+</code></pre>
+<p>And we'll add a test for this class in to the <code>src/test/java</code> folder in the <code>io.committed.ketos.plugins.personage</code> file:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">package</span> io.committed.ketos.plugins.personage;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PersonAgeGuesserTest</span> </span>{
+
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testNonPerson</span><span class="hljs-params">()</span> </span>{
+        BaleenEntity e = BaleenEntity.builder().type(<span class="hljs-string">"Location"</span>).build();
+        AgeGuesser guesser = <span class="hljs-keyword">new</span> AgeGuesser()
+        assertThat(guesser.guess(e)).isNotPresent();
+    }
+
+
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testEmpty</span><span class="hljs-params">()</span> </span>{
+        BaleenEntity e = BaleenEntity.builder().type(<span class="hljs-string">"Person"</span>).value(<span class="hljs-string">""</span>).build();
+        AgeGuesser guesser = <span class="hljs-keyword">new</span> AgeGuesser()
+        assertThat(guesser.guess(e)).isNotPresent();
+    }
+
+    <span class="hljs-meta">@Test</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testEmpty</span><span class="hljs-params">()</span> </span>{
+        BaleenEntity e = BaleenEntity.builder().type(<span class="hljs-string">"Person"</span>).value(<span class="hljs-string">"Chris"</span>).build();
+        AgeGuesser guesser = <span class="hljs-keyword">new</span> AgeGuesser()
+        <span class="hljs-comment">// Our expected age is nonsense, so if you've replaced the implementation this will need to be changed</span>
+        assertThat(guesser.guess(e).get()).isEqualsTo(<span class="hljs-number">50</span>);
+    }
+
+    <span class="hljs-comment">// ... other tests</span>
+} 
+</code></pre>
+<p>Now we have an implementation we need to hook it into GraphQL to make it available in the UI. In GraphQL the nicest way to add this type of function is to add it to the entity, as if it were an existing property (such as a value or name).</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">package</span> io.committed.ketos.plugins.personage;
+
+<span class="hljs-comment">// Use GraphQlService to tell Invest this should be merged into GraphQL schema  </span>
+<span class="hljs-meta">@GraphQlService</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">EntityAgeResolver</span> </span>{
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> AgeGuesser guesser;
+
+    <span class="hljs-comment">// Spring will add out AgeGuesser here for us</span>
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">EntityAgeResolver</span><span class="hljs-params">(AgeGuesser guesser)</span> </span>{
+        <span class="hljs-keyword">this</span>.guesser = guesser;
+    }
+
+    <span class="hljs-meta">@GraphQlQuery</span>(name=<span class="hljs-string">"age"</span>)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;Integer&gt; <span class="hljs-title">age</span><span class="hljs-params">(@GraphQLContext BaleenEntity entity)</span> </span>{
+        <span class="hljs-keyword">return</span> guesser.guess(entity);
+    }
+}
+
+</code></pre>
+<p>Add the Maven module to the to the <code>ketos-runner</code> as a dependency. Run the <code>ketos-runner</code> project, and we can now test our function inside Ketos using the GraphiQL view. (You'll need some data already in the databases to do this).</p>
+<pre><code class="hljs css languages- graphql">
+query {
+  corpora {
+    entities(probe: {type: <span class="hljs-string">"Person"</span>}) {
+      id
+     <span class="hljs-built_in"> type
+</span>      value
+    }
+  }
+}
+
+</code></pre>
+<p>which should respond with:</p>
+<pre><code class="hljs css languages- json">{
+  "data": {
+    "corpora": [
+        {
+            "entities": [
+            {
+                "id": "df4316867da28567d970ed3d67e246ae315f0f2808bd214e9774646709397119",
+                "type": "Person",
+                "value": "John",
+                "age": 40
+            },
+
+            ...
+            ]
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+<p>We are done, so can move onto the UI.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/jonah/docs/dev.tutorial-index.html">← Basic tutorial</a><a class="docs-next button" href="/jonah/docs/dev.tutorial-ui.html">Creating a simple UI →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/jonah/docs/setup.index.html">Setup</a><a href="/jonah/docs/use.index.html">Use</a><a href="/jonah/docs/dev.index.html">Develop</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/jonah">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

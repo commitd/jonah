@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Older Baleen outputs · Jonah</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Older Baleens versions (pre 2.6) do not contain the dedicated consumers to output to the required Ketos formats."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Older Baleen outputs · Jonah"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.io/jonah/jonah/index.html"/><meta property="og:description" content="Older Baleens versions (pre 2.6) do not contain the dedicated consumers to output to the required Ketos formats."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/jonah/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/jonah/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/jonah/"><h2 class="headerTitle">Jonah</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/jonah/docs/setup.index.html" target="_self">Setup</a></li><li class=""><a href="/jonah/docs/use.index.html" target="_self">Use</a></li><li class=""><a href="/jonah/docs/dev.index.html" target="_self">Develop</a></li><li class=""><a href="https://github.com/commitd/jonah-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/jonah-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Ingesting</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting started</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.index.html">Setting up Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.quickstart.html">Quick start</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Installation</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.requirements.html">Requirements</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.installation.html">Installation</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Configuration</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.configuration.html">Configuration</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.data.html">Setting up data</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.authentication.html">Authentication</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.audit.html">Audit</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Ingesting</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.baleen.html">Baleen 2.6</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/jonah/docs/setup.old-baleen.html">Older Baleen outputs</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Other deployments</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.docker.html">Docker</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Older Baleen outputs</h1></header><article><div><span><p>Older Baleens versions (pre 2.6) do not contain the dedicated consumers to output to the required Ketos formats.</p>
+<p>However you can convert the Baleen output to the new format through aggregations.</p>
+<p>For example, this aggregation will convert from the <code>relations</code> collection output by the <code>Mongo</code> consumer of Baleen 2.4 to a <code>full_relations</code> collection compatiable version.</p>
+<pre><code class="hljs css languages- js">db.relations.aggregate([
+     { <span class="hljs-attr">$match</span>: { <span class="hljs-string">"externalId"</span>: <span class="hljs-string">"db7aeace0bf3c363ecd3f0c8a1f38419d714c34fa286f6e3e83f934d6fd6619f"</span> } },
+
+    {
+      <span class="hljs-attr">$lookup</span>:
+         {
+           <span class="hljs-attr">from</span>: <span class="hljs-string">"entities"</span>,
+           <span class="hljs-attr">let</span>: { <span class="hljs-attr">doc_id</span>: <span class="hljs-string">"$docId"</span>, <span class="hljs-attr">mentionId</span>: <span class="hljs-string">"$source"</span> },
+           <span class="hljs-attr">as</span>: <span class="hljs-string">"sourceMentions"</span>,
+           <span class="hljs-attr">pipeline</span>: [
+           <span class="hljs-comment">// Join on entities which have the same document and matching mentionId</span>
+             { <span class="hljs-attr">$match</span>:
+                 { <span class="hljs-attr">$expr</span>:
+                    { <span class="hljs-attr">$and</span>:
+                       [
+                         { <span class="hljs-attr">$eq</span>: [ <span class="hljs-string">"$docId"</span>,  <span class="hljs-string">"$$doc_id"</span> ] },
+                         { <span class="hljs-attr">$filter</span>: { <span class="hljs-attr">input</span>: <span class="hljs-string">"$entities"</span>, <span class="hljs-attr">cond</span>: { <span class="hljs-attr">$eq</span>: [<span class="hljs-string">"$externalId"</span>,  <span class="hljs-string">"$$mentionId"</span> ] } } },
+                       ]
+                    }
+                 }
+              },
+              <span class="hljs-comment">// Convert entities to mentions... could be just an entities.arrayEl</span>
+             { <span class="hljs-attr">$unwind</span>: <span class="hljs-string">"$entities"</span> },
+             { <span class="hljs-attr">$project</span>:
+                 { 
+                     <span class="hljs-string">"value"</span>: <span class="hljs-string">"$entities.value"</span>,
+                     <span class="hljs-string">"type"</span>: <span class="hljs-string">"$entities.type"</span>
+                 }
+              }
+           ]
+        }
+    },
+    <span class="hljs-comment">//Exact copy of above look up with source-&gt;target and sourceMentions-&gt;targetMentions</span>
+        {
+      <span class="hljs-attr">$lookup</span>:
+         {
+           <span class="hljs-attr">from</span>: <span class="hljs-string">"entities"</span>,
+           <span class="hljs-attr">let</span>: { <span class="hljs-attr">doc_id</span>: <span class="hljs-string">"$docId"</span>, <span class="hljs-attr">mentionId</span>: <span class="hljs-string">"$target"</span> },
+           <span class="hljs-attr">as</span>: <span class="hljs-string">"targetMentions"</span>,
+           <span class="hljs-attr">pipeline</span>: [
+             { <span class="hljs-attr">$match</span>:
+                 { <span class="hljs-attr">$expr</span>:
+                    { <span class="hljs-attr">$and</span>:
+                       [
+                         { <span class="hljs-attr">$eq</span>: [ <span class="hljs-string">"$docId"</span>,  <span class="hljs-string">"$$doc_id"</span> ] },
+                         { <span class="hljs-attr">$filter</span>: { <span class="hljs-attr">input</span>: <span class="hljs-string">"$entities"</span>, <span class="hljs-attr">cond</span>: { <span class="hljs-attr">$eq</span>: [<span class="hljs-string">"$externalId"</span>,  <span class="hljs-string">"$$mentionId"</span> ] } } },
+
+                       ]
+                    }
+                 }
+              },
+             { <span class="hljs-attr">$unwind</span>: <span class="hljs-string">"$entities"</span> },
+              { <span class="hljs-attr">$project</span>:
+                 { 
+                     <span class="hljs-string">"value"</span>: <span class="hljs-string">"$entities.value"</span>,
+                     <span class="hljs-string">"type"</span>: <span class="hljs-string">"$entities.type"</span>
+                 }
+              }
+           ]
+        }
+    },
+    { <span class="hljs-attr">$addFields</span>:
+         { 
+              <span class="hljs-string">"sourceMention"</span>: { <span class="hljs-attr">$arrayElemAt</span>: [<span class="hljs-string">"$sourceMentions"</span>, <span class="hljs-number">0</span>] },
+              <span class="hljs-string">"targetMention"</span>: { <span class="hljs-attr">$arrayElemAt</span>: [<span class="hljs-string">"$targetMentions"</span>, <span class="hljs-number">0</span>] },
+         }
+      },
+      { <span class="hljs-attr">$addFields</span>:
+         { 
+              <span class="hljs-string">"sourceId"</span>: <span class="hljs-string">"$source"</span>,
+              <span class="hljs-string">"targetId"</span>: <span class="hljs-string">"$target"</span>,
+              <span class="hljs-string">"sourceValue"</span>: <span class="hljs-string">"$sourceMention.value"</span>,
+              <span class="hljs-string">"sourceType"</span>: <span class="hljs-string">"$sourceMention.type"</span>,
+              <span class="hljs-string">"targetValue"</span>: <span class="hljs-string">"$targetMention.value"</span>,
+              <span class="hljs-string">"targetType"</span>: <span class="hljs-string">"$targetMention.type"</span>,
+         }
+      },
+      { 
+          <span class="hljs-attr">$project</span>: {
+                <span class="hljs-string">"sourceMention"</span>: <span class="hljs-literal">false</span>,
+                <span class="hljs-string">"source"</span>: <span class="hljs-literal">false</span>,
+                <span class="hljs-string">"sourceMentions"</span>: <span class="hljs-literal">false</span>,
+                <span class="hljs-string">"targetMention"</span>: <span class="hljs-literal">false</span>,
+                <span class="hljs-string">"target"</span>: <span class="hljs-literal">false</span>,
+                <span class="hljs-string">"targetMentions"</span>: <span class="hljs-literal">false</span>
+          }
+      },
+    {<span class="hljs-attr">$out</span>: <span class="hljs-string">'full_relations'</span>}  
+])
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/jonah/docs/setup.baleen.html">← Baleen 2.6</a><a class="docs-next button" href="/jonah/docs/setup.docker.html">Docker →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/jonah/docs/setup.index.html">Setup</a><a href="/jonah/docs/use.index.html">Use</a><a href="/jonah/docs/dev.index.html">Develop</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/jonah">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

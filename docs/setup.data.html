@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Setting up data · Jonah</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Primary reason for changing the configuration in Ketos is to specify data sources. An example configuration is shown below:"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Setting up data · Jonah"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.io/jonah/jonah/index.html"/><meta property="og:description" content="Primary reason for changing the configuration in Ketos is to specify data sources. An example configuration is shown below:"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/jonah/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/jonah/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/jonah/"><h2 class="headerTitle">Jonah</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/jonah/docs/setup.index.html" target="_self">Setup</a></li><li class=""><a href="/jonah/docs/use.index.html" target="_self">Use</a></li><li class=""><a href="/jonah/docs/dev.index.html" target="_self">Develop</a></li><li class=""><a href="https://github.com/commitd/jonah-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/jonah-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Configuration</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting started</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.index.html">Setting up Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.quickstart.html">Quick start</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Installation</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.requirements.html">Requirements</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.installation.html">Installation</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Configuration</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.configuration.html">Configuration</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/jonah/docs/setup.data.html">Setting up data</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.authentication.html">Authentication</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.audit.html">Audit</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Ingesting</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.baleen.html">Baleen 2.6</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.old-baleen.html">Older Baleen outputs</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Other deployments</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/setup.docker.html">Docker</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Setting up data</h1></header><article><div><span><p>Primary reason for changing the configuration in Ketos is to specify data sources. An example configuration is shown below:</p>
+<pre><code class="hljs css languages- yaml"><span class="hljs-attr">ketos:</span>
+<span class="hljs-attr">  core:</span>
+<span class="hljs-attr">    mongo:</span> 
+<span class="hljs-attr">      - id:</span> <span class="hljs-string">news_mongo</span>
+<span class="hljs-attr">        datasource:</span> <span class="hljs-string">rss</span>
+<span class="hljs-attr">        name:</span> <span class="hljs-string">News</span> <span class="hljs-string">Mongo</span>
+<span class="hljs-attr">        description:</span> <span class="hljs-string">News</span> <span class="hljs-string">dataset</span> <span class="hljs-string">in</span> <span class="hljs-string">Mongo</span>
+<span class="hljs-attr">        edittable:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">        db:</span> <span class="hljs-string">baleen_news</span>
+<span class="hljs-attr">      - id:</span> <span class="hljs-string">enron_mongo</span>
+<span class="hljs-attr">        datasource:</span> <span class="hljs-string">enron</span>
+<span class="hljs-attr">        name:</span> <span class="hljs-string">Enron</span> <span class="hljs-string">emails</span>
+<span class="hljs-attr">        description:</span> <span class="hljs-string">An</span> <span class="hljs-string">example</span> <span class="hljs-string">email</span> <span class="hljs-string">dataset</span> <span class="hljs-string">in</span> <span class="hljs-string">Mongo</span> 
+<span class="hljs-attr">        edittable:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">        db:</span> <span class="hljs-string">baleen_enron</span>        
+<span class="hljs-attr">    elasticsearch:</span> 
+<span class="hljs-attr">      - id:</span> <span class="hljs-string">news_es</span>
+<span class="hljs-attr">        datasource:</span> <span class="hljs-string">rss</span>
+<span class="hljs-attr">        name:</span> <span class="hljs-string">News</span> <span class="hljs-string">ES</span>
+<span class="hljs-attr">        description:</span> <span class="hljs-string">News</span> <span class="hljs-string">dataset</span> <span class="hljs-string">in</span> <span class="hljs-string">ES</span>
+<span class="hljs-attr">        edittable:</span> <span class="hljs-literal">false</span>
+<span class="hljs-attr">        host:</span> <span class="hljs-string">localhost</span>
+<span class="hljs-attr">        index:</span> <span class="hljs-string">baleen_news</span>
+<span class="hljs-attr">    feedback:</span>
+<span class="hljs-attr">      id:</span> <span class="hljs-string">feedback</span>
+</code></pre>
+<p>Breaking this up, we have <code>ketos.core</code> under which are <code>mongo</code>, <code>elasticsearch</code> and <code>feedback</code> nodes.</p>
+<p>The Mongo and Elasticsearch sections define the datasets available to Ketos. They take the same generic form:</p>
+<table>
+<thead>
+<tr><th>Field</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>id</td><td></td><td>A unique name within the application for this dataset.</td></tr>
+<tr><td>name</td><td></td><td>A friendly name to display the user within the UI</td></tr>
+<tr><td>description</td><td>empty</td><td>A short description (sentence or so) which helps the under understand the content of the dataset</td></tr>
+<tr><td>datasource</td><td></td><td>A identifier for the originating source of the data. This is used by Ketos to limit results to a single datasource but also to avoid returning results in multiple datasets which are from the same original datasource. See comment below.</td></tr>
+<tr><td>edittable</td><td>false</td><td>Should the content in this dataset be open to modification by Ketos users (delete / edit)</td></tr>
+</tbody>
+</table>
+<p>Mongo has the following additionally configuration items:</p>
+<table>
+<thead>
+<tr><th>Field</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>host</td><td>localhost</td><td>The host server or IP to connect to</td></tr>
+<tr><td>port</td><td>27017</td><td>The port on which to connect</td></tr>
+<tr><td>db</td><td>baleen</td><td>The name of the database in which Baleen output is to be found</td></tr>
+<tr><td>documents</td><td>documents</td><td>The Mongo collection within the database containing documents</td></tr>
+<tr><td>entities</td><td>entities</td><td>The Mongo collection within the database containing entities</td></tr>
+<tr><td>relations</td><td>relations</td><td>The Mongo collection within the database containing relations</td></tr>
+<tr><td>mentions</td><td>mentions</td><td>The Mongo collection within the database containing mentions</td></tr>
+</tbody>
+</table>
+<p>Elasticsearch has the following additional configuration items:</p>
+<table>
+<thead>
+<tr><th>Field</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>host</td><td>localhost</td><td>The host server or IP to connect to</td></tr>
+<tr><td>port</td><td>9300</td><td>The port on which to connect</td></tr>
+<tr><td>cluster</td><td>elasticsearch</td><td>The ES cluster to join</td></tr>
+<tr><td>index</td><td>baleen</td><td>The name of the index in which Baleen output is to be found</td></tr>
+<tr><td>documents</td><td>documents</td><td>The type within the index for documents</td></tr>
+<tr><td>entities</td><td>entities</td><td>The type within the index for  entities</td></tr>
+<tr><td>relations</td><td>relations</td><td>The type within the index for  relations</td></tr>
+<tr><td>mentions</td><td>mentions</td><td>The type within the index for  mentions</td></tr>
+</tbody>
+</table>
+<p>In order to 'do something' a Ketos application will require at least one Mongo or Elasticsearch dataset. It is permissible to have multiple datasets, being a all Mongo, all Elasticsearch or a mix of both. The use of <code>datasource</code> is described in more detail <a href="dev.data.html">Developer guide</a> but in summary it is important to understand what happens when you have multiple datasets.</p>
+<p>Actual behaviour with datasets is determined by individual plugins, however the following generally applies:</p>
+<ul>
+<li>Each dataset is offered to the user to be queried separately. The user will normally specify which dataset they wish a query to target.</li>
+<li>If we have mulitple datasets which are stated as having the same datasource then, normally, only one is selected to run a query against. This is because if we have two datasets which contain the same data, searching both of them would return the same results. More over it is very difficult to determine the ordering of results between different database types.</li>
+<li>As noted, the plugin can select to override these or even to request a particular type of database run a query.</li>
+</ul>
+<p>Feedback defines a place for recording user comments (bug reports, feature requests) in the tool. It has limited configuration but as it is a Mongo backed dataset you can set its server and post information.</p>
+<table>
+<thead>
+<tr><th>Field</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>host</td><td>localhost</td><td>The host server or IP to connect to</td></tr>
+<tr><td>port</td><td>27017</td><td>The port on which to connect</td></tr>
+<tr><td>db</td><td>ketos_feedback</td><td>The name of the database in which a 'feedback' collection will be created</td></tr>
+</tbody>
+</table>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/jonah/docs/setup.configuration.html">← Configuration</a><a class="docs-next button" href="/jonah/docs/setup.authentication.html">Authentication →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/jonah/docs/setup.index.html">Setup</a><a href="/jonah/docs/use.index.html">Use</a><a href="/jonah/docs/dev.index.html">Develop</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/jonah">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Build · Jonah</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Building Ketos is performed by a few helper scripts. Naturally you first need a [development environment](dev.setup-dev-env.html)."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Build · Jonah"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.io/jonah/jonah/index.html"/><meta property="og:description" content="Building Ketos is performed by a few helper scripts. Naturally you first need a [development environment](dev.setup-dev-env.html)."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/jonah/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/jonah/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/jonah/"><h2 class="headerTitle">Jonah</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/jonah/docs/setup.index.html" target="_self">Setup</a></li><li class=""><a href="/jonah/docs/use.index.html" target="_self">Use</a></li><li class="siteNavGroupActive"><a href="/jonah/docs/dev.index.html" target="_self">Develop</a></li><li class=""><a href="https://github.com/commitd/jonah-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/jonah-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Setup</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Setup</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.index.html">Developing Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.setup-dev-env.html">Setup a development environment</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.documentation.html">Updating documentation</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/jonah/docs/dev.build.html">Build</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.data.html">Data types in Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.graphql.html">GraphQL Usage</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.actions.html">Actions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-index.html">Basic tutorial</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-server.html">Creating a simple server plugin</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui.html">Creating a simple UI</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui-actions.html">Responding to UI actions</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-advanced.html">Advanced</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Support</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.ui-plugins-for-devs.html">Development supporting UI plugins</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Build</h1></header><article><div><span><p>Building Ketos is performed by a few helper scripts. Naturally you first need a <a href="dev.setup-dev-env.html">development environment</a>.</p>
+<p>The scripts do nothing special, Ketos is is a combination of standard Maven and Lerna/Yarn projects after all.</p>
+<p>The scripts are found in the root of the repository:</p>
+<ul>
+<li><code>build-js.sh</code> builds only the the UI</li>
+<li><code>build-java.sh</code> builds only the server components</li>
+<li><code>build-documentation.sh</code> builds only the documentation</li>
+<li><code>build.sh</code> performs all of the above</li>
+</ul>
+<p>Each of the individual builds compiles the code or documentation in place. They are then moved over to the <code>/build</code> folder. Thus running <code>./build.sh</code> will create a complete deployment, which includes documentation, ui plugins and some example configuration.</p>
+<p>As the build process is sequential and there are a number of modules on both the UI and on the Server it can take a while to complete and failure at the end of the process can be frustrating. If you know you have only changed a single UI plugin we suggest you first run <code>yarn build</code> within the plugins directory to ensure it will compile properly. Then run the <code>build-js</code> or <code>build</code> script to perform a larger build release.</p>
+<h2><a class="anchor" aria-hidden="true" id="versioning"></a><a href="#versioning" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Versioning</h2>
+<p>Support for versioning is built into Maven and Lerna, and we use those within Ketos. We don't include a script to perform version updates, versioning must be handled manually.</p>
+<p>In general we favour semantic versioning <code>x.y.z</code>:</p>
+<ul>
+<li>Update <code>x</code> for major changes, particularly those that are not backwards compatible</li>
+<li>Update <code>y</code> for minor changes in functionality, incrementing for each release</li>
+<li>Update <code>z</code> for bugs or security patches for the previous release</li>
+</ul>
+<p>The nature of the Ketos project tends to lead to minor releases bumps. Currently we also release both UI and Server side at the same version (even if there are no changes).</p>
+<p>The general process is as follows, where:</p>
+<ul>
+<li><code>$VERSION</code> with the target version (eg if we are working on <code>0.3.0</code> the next version is <code>0.4.0</code>)</li>
+<li><code>$NEXT_DEV_VERSION</code> is <code>0.5.0-SNAPSHOT</code></li>
+</ul>
+<pre><code class="hljs"><span class="hljs-meta">#</span><span class="bash"> Start a git flow release</span>
+git flow release start $VERSION
+<span class="hljs-meta">
+#</span><span class="bash"> Update versions <span class="hljs-keyword">in</span> maven</span>
+mvn version:set $VERSION
+mvn versions:commit
+<span class="hljs-meta">
+#</span><span class="bash"> Full build</span>
+./build.sh
+<span class="hljs-meta">
+#</span><span class="bash"> At this stage you likely want to <span class="hljs-built_in">test</span> the deploy directory</span>
+<span class="hljs-meta">
+#</span><span class="bash"> Update yarn version, and release to NPM (non-private modules)</span>
+yarn version:release
+<span class="hljs-meta">#</span><span class="bash"> Release to mvn central (<span class="hljs-keyword">if</span> desired)</span>
+mvn deploy
+<span class="hljs-meta">
+#</span><span class="bash"> End of git flow release</span>
+<span class="hljs-meta">#</span><span class="bash"> This will also tag the version</span>
+git flow release finish
+<span class="hljs-meta">
+#</span><span class="bash"> Here you may want to save the build directory eg to a releases page etc</span>
+<span class="hljs-meta">
+#</span><span class="bash"> Push to <span class="hljs-built_in">source</span> control</span>
+git push origin master
+<span class="hljs-meta">
+#</span><span class="bash"> <span class="hljs-built_in">return</span> to develop branch</span>
+git checkout develop
+<span class="hljs-meta">
+#</span><span class="bash"> update versions next dev version</span>
+mvn versions:set $NEXT_DEV_VERSION
+version:snapshot $NEXT_DEV_VERSION
+
+git push origin develop
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/jonah/docs/dev.documentation.html">← Updating documentation</a><a class="docs-next button" href="/jonah/docs/dev.data.html">Data types in Ketos →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/jonah/docs/setup.index.html">Setup</a><a href="/jonah/docs/use.index.html">Use</a><a href="/jonah/docs/dev.index.html">Develop</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/jonah">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

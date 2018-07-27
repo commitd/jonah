@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Responding to UI actions · Jonah</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Lets create a new UI plugin which will display the age of a specific entity."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Responding to UI actions · Jonah"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.io/jonah/jonah/index.html"/><meta property="og:description" content="Lets create a new UI plugin which will display the age of a specific entity."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/jonah/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/jonah/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/jonah/"><h2 class="headerTitle">Jonah</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/jonah/docs/setup.index.html" target="_self">Setup</a></li><li class=""><a href="/jonah/docs/use.index.html" target="_self">Use</a></li><li class="siteNavGroupActive"><a href="/jonah/docs/dev.index.html" target="_self">Develop</a></li><li class=""><a href="https://github.com/commitd/jonah-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/jonah-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Tutorials</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Setup</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.index.html">Developing Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.setup-dev-env.html">Setup a development environment</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.documentation.html">Updating documentation</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.build.html">Build</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.data.html">Data types in Ketos</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.graphql.html">GraphQL Usage</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.actions.html">Actions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-index.html">Basic tutorial</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-server.html">Creating a simple server plugin</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-ui.html">Creating a simple UI</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/jonah/docs/dev.tutorial-ui-actions.html">Responding to UI actions</a></li><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.tutorial-advanced.html">Advanced</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Support</h3><ul><li class="navListItem"><a class="navItem" href="/jonah/docs/dev.ui-plugins-for-devs.html">Development supporting UI plugins</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Responding to UI actions</h1></header><article><div><span><p>Lets create a new UI plugin which will display the age of a specific entity.</p>
+<h2><a class="anchor" aria-hidden="true" id="initial-setup"></a><a href="#initial-setup" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Initial setup</h2>
+<p>As previous, start by copying the <code>ketos-project-template</code> into the naming it <code>ketos-ui-personage</code>.</p>
+<p>We now edit a few files to reflect the name change:</p>
+<ul>
+<li>Edit <code>package.json</code> set the name field put <code>ketos-ui-personage</code></li>
+<li>In <code>public/manifest.json</code> set the name and short_name to <code>ketos-ui-personage</code></li>
+<li>In <code>public/invest.json</code> set the id to <code>ketos-ui-personage</code></li>
+</ul>
+<p>Whilst editing the <code>invest.json</code> lets also set the other fields, the most important of which is to declare that we support the <code>entity.view</code> action.</p>
+<pre><code class="hljs css languages- json">{
+    <span class="hljs-attr">"id"</span>: <span class="hljs-string">"ketos-ui-personage"</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Person's age"</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Determine age from entity information"</span>,
+    <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"user"</span>,
+    <span class="hljs-attr">"roles"</span>: [],
+    <span class="hljs-attr">"actions"</span>: [
+        {
+            <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Age"</span>,
+            <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Guess entity's age"</span>,
+            <span class="hljs-attr">"action"</span>: <span class="hljs-string">"entity.view"</span>
+        }
+
+    ]
+}
+
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="data-container-and-view"></a><a href="#data-container-and-view" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Data container and view</h2>
+<p>As before we'll create a visual component <code>PersonAgeView</code> in <code>PersonAgeView.tsx</code> and a GraphQL data manager in <code>DataContainer.tsx</code>:</p>
+<pre><code class="hljs css languages- tsx"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<span class="hljs-keyword">import</span> { Table } <span class="hljs-keyword">from</span> <span class="hljs-string">'semantic-ui-react'</span>
+
+
+type Person = {
+
+}
+
+type Props = {
+    <span class="hljs-attr">data</span>: {
+        <span class="hljs-attr">corpus</span>: {
+           <span class="hljs-attr">entity</span>: {
+                <span class="hljs-attr">value</span>: string
+                age?: number
+            }
+        }
+    }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PersonAgeView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span>&lt;<span class="hljs-title">Props</span>&gt; </span>{
+
+    render() {
+        <span class="hljs-keyword">const</span> { data } = <span class="hljs-keyword">this</span>.props
+
+        <span class="hljs-keyword">if</span>(!data || !data.corpus || !data.corpus.entity) {
+            <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>No results<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+        }
+
+        <span class="hljs-keyword">const</span> entity = data.corpus.entity
+
+        <span class="hljs-keyword">return</span> (
+            <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+                {entity.age == null &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Sorry we don't know how old {entity.value} is.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>}
+                {entity.age != null &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{entity.value} is estimated to be {entity.age} years old.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>}
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>    
+        )
+    }
+}
+</code></pre>
+<p>The DataContainer is a slightly different query this time, because we want to pass in a <code>datasetId</code> and <code>entityId</code> to find:</p>
+<pre><code class="hljs css languages- tsx"><span class="hljs-keyword">import</span> gql <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-tag'</span>
+<span class="hljs-keyword">import</span> { createDataContainer } <span class="hljs-keyword">from</span> <span class="hljs-string">'invest-components'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> Variables = {}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> Response = {
+    corpora: {
+        entities: {
+            id: <span class="hljs-built_in">string</span>
+            <span class="hljs-keyword">type</span>: <span class="hljs-built_in">string</span>
+            value: <span class="hljs-built_in">string</span>
+            age?: <span class="hljs-built_in">number</span>
+        }[]
+    }[]
+}
+
+<span class="hljs-keyword">const</span> QUERY = gql<span class="hljs-string">`
+query ($datasetId: String!, $entityId: String) {
+  corpora {
+    entity(id: $entityId ) {
+      id
+      type
+      value
+      age
+    }
+  }
+}
+`</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createDataContainer&lt;Variables, Response&gt;(QUERY)
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="responding-to-the-action"></a><a href="#responding-to-the-action" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Responding to the action</h2>
+<p>Our plugin will display information only when it has an <code>entityId</code> to look up. Whilst we could allow the user to input this manual, offer them a search, etc we can let other plugins do that for us (eg entity search) and let the user navigate from those plugins to ours. This way we can focus on building our specific functionality and not worry about other aspects.</p>
+<pre><code class="hljs css languages- tsx"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<span class="hljs-keyword">import</span> { isEquals } <span class="hljs-keyword">from</span> <span class="hljs-string">'lodash-es'</span>
+<span class="hljs-keyword">import</span> { PluginProps } <span class="hljs-keyword">from</span> <span class="hljs-string">'invest-plugin'</span>
+<span class="hljs-keyword">import</span> DataContainer <span class="hljs-keyword">from</span> <span class="hljs-string">'./DataContainer'</span>
+<span class="hljs-keyword">import</span> PersonAgeView <span class="hljs-keyword">from</span> <span class="hljs-string">'./PersonAgeView'</span>
+
+type OwnProps = {}
+
+type Props = OwnProps &amp; PluginProps
+
+type State = {
+    datasetId?: string,
+    entityId? : string 
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span>&lt;<span class="hljs-title">Props</span>&gt; </span>{
+
+  state: State = {
+      <span class="hljs-attr">datasetId</span>: <span class="hljs-literal">undefined</span>,
+      <span class="hljs-attr">entityId</span>: <span class="hljs-literal">undefined</span>
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    <span class="hljs-comment">// Respond to change of props!</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.props.action !== nextProps.action || !isEqual(<span class="hljs-keyword">this</span>.props.payload, nextProps.payload)) {
+      <span class="hljs-keyword">this</span>.onAction(nextProps.action, nextProps.payload)
+    }
+  }
+
+  render() {
+    <span class="hljs-keyword">const</span> { datasetId, entityId } = <span class="hljs-keyword">this</span>.state
+
+    <span class="hljs-comment">// Do we have enough to proceed?</span>
+    <span class="hljs-keyword">const</span> hasRequiredInfo = datasetId &amp;&amp; entityId
+
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+        {!hasRequiredInfo &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Please use another plugin to navigate to this<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>}
+        {hasRequiredInfo &amp;&amp; 
+            <span class="hljs-tag">&lt;<span class="hljs-name">DataContainer</span> <span class="hljs-attr">variables</span>=<span class="hljs-string">{{datasetId,</span> <span class="hljs-attr">entityId</span>}}&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">PersonAgeView</span> /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">DataContainer</span>&gt;</span>
+        }
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+    )
+  }
+
+  private onAction = <span class="hljs-function">(<span class="hljs-params">action?: string, payload?: {}</span>) =&gt;</span> {
+      <span class="hljs-keyword">if</span>(action === ENTITY_VIEW)  {
+          <span class="hljs-keyword">this</span>.setState({
+            <span class="hljs-attr">datasetId</span>: p.datasetId,
+            <span class="hljs-attr">entityId</span>: p.entityId
+         })
+        }
+    }
+  
+}
+
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="viewing-in-browser"></a><a href="#viewing-in-browser" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Viewing in browser</h2>
+<p>As before you run a live development version of the plugin using:</p>
+<pre><code class="hljs">yarn <span class="hljs-literal">start</span>
+</code></pre>
+<p>and visiting <a href="http://localhost:3001">http://localhost:3001</a>.</p>
+<p>However because our plugin requires an action, and perhaps more importantly a payload, we only see a the &quot;Please use another plugin...&quot; message on screen.</p>
+<p>There are three solutions to this:</p>
+<ul>
+<li>Temporarily hard code values in the state above i.e. <code>state = { datasetId: &quot;mydataset&quot;, entityId:&quot;123545&quot; }</code> which already exist in your database, as a quick test. Remember to delete these before committing or building the production release.</li>
+<li>Using the Action Development Plugin to pass an action to the plugin whilst it is mounted in the Live Development Plugin view.</li>
+<li>Build the application as a full plugin using <code>yarn build</code> and use the <code>invest.ui.hosts.roots</code> <a href="setup.configuration.html">configuration setting</a> to load the production plugin</li>
+</ul>
+<p>When starting the development of a plugin, where the plugin will change a lot quickly, we'd recommend using the first option. It is very simple and no developer effort. As the plugin matures and you wish to test wthin the application the other options become more viable.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/jonah/docs/dev.tutorial-ui.html">← Creating a simple UI</a><a class="docs-next button" href="/jonah/docs/dev.tutorial-advanced.html">Advanced →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/jonah/docs/setup.index.html">Setup</a><a href="/jonah/docs/use.index.html">Use</a><a href="/jonah/docs/dev.index.html">Develop</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/jonah">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>
