@@ -34,5 +34,11 @@ This is a top level project repository, but the actual code is held under to sep
 The project depends on the Invest framework:
 
 - [Invest](https://commitd.github.io/invest) for the project documentation
-- [Invest Server](https://github.com/commitd/jonah-server) for backend server code
-- [Invest UI](https://github.com/commitd/jonah-ui) for the frontend web code
+- [Invest Server](https://github.com/commitd/invest-server) for backend server code
+- [Invest UI](https://github.com/commitd/invest-ui) for the frontend web code
+
+## Licence
+
+Jonah is licensed under the Apache Software Licence, see the LICENSE for more details.
+
+Committed were selected by the Defence Science Technology Laboratory (Dstl) to deliver the Jonah Framework under a contract which ended in March 2018.
