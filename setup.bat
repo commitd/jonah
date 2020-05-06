@@ -10,5 +10,5 @@ call setup.bat
 cd -
 
 cd jonah-ui
-call setup.sh
+call setup.bat
 cd -
